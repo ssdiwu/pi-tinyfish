@@ -1,5 +1,7 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 import * as path from "node:path";
+import * as fs from "node:fs/promises";
+import * as os from "node:os";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname ?? ".", "..");
 
@@ -21,21 +23,41 @@ type ToolShape = {
   execute: (...args: unknown[]) => Promise<unknown>;
 };
 
-// Ensure no API key leaks from environment during tool tests
-const savedEnvKey = process.env.TINYFISH_API_KEY;
-delete process.env.TINYFISH_API_KEY;
-
 describe("tools — registration shape validation", () => {
+  let tmpDir: string;
+  let originalEnvDir: string | undefined;
+  let originalApiKeyEnv: string | undefined;
+
+  // Isolate from real config file and env vars
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "pi-tinyfish-tools-test-"));
+    originalEnvDir = process.env.PI_CODING_AGENT_DIR;
+    originalApiKeyEnv = process.env.TINYFISH_API_KEY;
+    process.env.PI_CODING_AGENT_DIR = tmpDir;
+    delete process.env.TINYFISH_API_KEY;
+  });
+
+  afterEach(() => {
+    process.env.PI_CODING_AGENT_DIR = originalEnvDir;
+    if (originalApiKeyEnv !== undefined) {
+      process.env.TINYFISH_API_KEY = originalApiKeyEnv;
+    } else {
+      delete process.env.TINYFISH_API_KEY;
+    }
+    // Clean up temp dir
+    fs.rm(tmpDir, { recursive: true }).catch(() => {});
+  });
+
   // ---------------------------------------------------------------------------
   // Each tool must have required ToolDefinition fields
   // ---------------------------------------------------------------------------
 
-  for (const [name, path] of Object.entries(toolImports)) {
+  for (const [name, toolPath] of Object.entries(toolImports)) {
     describe(name, () => {
       let tool: ToolShape;
 
       beforeAll(async () => {
-        const mod = await import(path);
+        const mod = await import(toolPath);
         const exportName = `tinyfish_${name.replace("-", "_")}`;
         tool = mod[exportName];
       });
@@ -87,12 +109,11 @@ describe("tools — registration shape validation", () => {
       });
 
       it("execute returns a Promise (async)", async () => {
-        // Call with minimal args — should return quickly since no API key configured
+        // No API key in isolated env → should return error result quickly
         const resultPromise = tool.execute("test-call-id", {} as Record<string, unknown>);
         expect(resultPromise).toBeInstanceOf(Promise);
 
         const result = await resultPromise;
-        // Should return AgentToolResult shape
         expect(result).toHaveProperty("content");
         expect(result).toHaveProperty("details");
         expect(Array.isArray(result.content)).toBe(true);
@@ -109,17 +130,7 @@ describe("tools — registration shape validation", () => {
       const mod = await import(toolImports.search);
       const queryProp = mod.tinyfish_search.parameters.properties.query;
       expect(queryProp).toBeDefined();
-      // TypeBox String type has type: "string"
-      // We just check it exists and is an object
       expect(typeof queryProp).toBe("object");
-    });
-
-    it("has optional location, language, page, maxBytes params", async () => {
-      const mod = await import(toolImports.search);
-      const props = Object.keys(mod.tinyfish_search.parameters.properties);
-      expect(props).toContain("query");
-      // Optional params may or may not be present depending on TypeBox Optional wrapper
-      // At minimum query should exist
     });
   });
 
@@ -127,7 +138,6 @@ describe("tools — registration shape validation", () => {
     it("has url or urls parameter", async () => {
       const mod = await import(toolImports.fetch);
       const props = Object.keys(mod.tinyfish_fetch.parameters.properties);
-      // Should have at least one of url/urls
       const hasUrlParam = props.includes("url") || props.includes("urls");
       expect(hasUrlParam).toBe(true);
     });
@@ -167,8 +177,8 @@ describe("tools — registration shape validation", () => {
 
   describe("no API key configured", () => {
     it("all tools return helpful error message in content", async () => {
-      for (const [name, path] of Object.entries(toolImports)) {
-        const mod = await import(path);
+      for (const [name, toolPath] of Object.entries(toolImports)) {
+        const mod = await import(toolPath);
         const exportName = `tinyfish_${name.replace("-", "_")}`;
         const tool = mod[exportName];
 
