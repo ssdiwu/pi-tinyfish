@@ -1,44 +1,4 @@
-// ---------------------------------------------------------------------------
-// Output formatting & truncation helpers
-// ---------------------------------------------------------------------------
-
-const DEFAULT_MAX_BYTES = 50 * 1024;  // 50 KB
-const MAX_ALLOWED = 200 * 1024;       // 200 KB hard cap
-
-/**
- * Truncate a string to fit within byte limit.
- * Tries to break at sentence/line boundaries first, then hard cut.
- */
-export function truncateText(text: string, maxBytes: number = DEFAULT_MAX_BYTES): string {
-  if (maxBytes > MAX_ALLOWED) maxBytes = MAX_ALLOWED;
-
-  const encoder = new TextEncoder();
-  if (encoder.encode(text).length <= maxBytes) return text;
-
-  // Try to find a good break point
-  let truncated = text;
-  while (encoder.encode(truncated).length > maxBytes && truncated.length > 0) {
-    // Try cutting at last paragraph
-    const lastPara = truncated.lastIndexOf("\n\n");
-    if (lastPara > maxBytes * 0.5) {
-      truncated = truncated.slice(0, lastPara);
-      continue;
-    }
-
-    // Try last line
-    const lastLine = truncated.lastIndexOf("\n");
-    if (lastLine > maxBytes * 0.3) {
-      truncated = truncated.slice(0, lastLine);
-      continue;
-    }
-
-    // Hard cut
-    truncated = truncated.slice(0, Math.floor(truncated.length * 0.9));
-  }
-
-  const byteLen = encoder.encode(truncated).length;
-  return `${truncated}\n\n--- [Output truncated: ${byteLen} bytes shown, original was larger] ---`;
-}
+import { truncateHead, DEFAULT_MAX_BYTES } from "@earendil-works/pi-coding-agent";
 
 // ---------------------------------------------------------------------------
 // Search result formatting
@@ -128,4 +88,13 @@ export function formatAgentEvent(event: { type: string; data: unknown }): string
     default:
       return `${event.type}: ${JSON.stringify(event.data)}`;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Truncation wrapper around pi's built-in
+// ---------------------------------------------------------------------------
+
+export function truncateOutput(text: string, maxBytes?: number): string {
+  const limit = maxBytes ?? DEFAULT_MAX_BYTES;
+  return truncateHead(text, { maxBytes: limit });
 }

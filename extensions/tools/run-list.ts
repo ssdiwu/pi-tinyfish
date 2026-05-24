@@ -54,52 +54,44 @@ export const tinyfish_run_list = {
     if (!apiKey) {
       return {
         content: [
-          {
-            type: "text" as const,
-            text: "TinyFish API key not configured. Run /tinyfish-login to set it up.",
-          },
+          { type: "text" as const, text: "TinyFish API key not configured. Run /tinyfish-login to set it up." },
         ],
+        details: {},
       };
     }
 
-    try {
-      const response = await listRuns(apiKey, {
-        status: params.status,
-        goal: params.goal,
-        created_after: params.createdAfter,
-        created_before: params.createdBefore,
-        sort_direction: params.sortDirection,
-        limit: params.limit ?? 20,
-      });
+    const response = await listRuns(apiKey, {
+      status: params.status,
+      goal: params.goal,
+      created_after: params.createdAfter,
+      created_before: params.createdBefore,
+      sort_direction: params.sortDirection,
+      limit: params.limit ?? 20,
+    });
 
-      const runs = response.runs ?? [];
-      if (!runs.length) {
-        return {
-          content: [{ type: "text" as const, text: "No runs found matching the criteria." }],
-        };
-      }
-
-      const lines: string[] = [`Found ${runs.length} run(s):\n`];
-
-      for (const r of runs) {
-        lines.push(`### ${r.id}`);
-        lines.push(`Status: ${r.status}`);
-        lines.push(`Goal: ${r.goal}`);
-        lines.push(`URL: ${r.url}`);
-        if (r.created_at) lines.push(`Created: ${r.created_at}`);
-        if (r.error) lines.push(`Error: ${r.error}`);
-        lines.push("");
-      }
-
+    const runs = response.runs ?? [];
+    if (!runs.length) {
       return {
-        content: [{ type: "text" as const, text: lines.join("\n") }],
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return {
-        content: [{ type: "text" as const, text: `Failed to list runs: ${message}` }],
-        isError: true,
+        content: [{ type: "text" as const, text: "No runs found matching the criteria." }],
+        details: { count: 0 },
       };
     }
+
+    const lines: string[] = [`Found ${runs.length} run(s):\n`];
+
+    for (const r of runs) {
+      lines.push(`### ${r.id}`);
+      lines.push(`Status: ${r.status}`);
+      lines.push(`Goal: ${r.goal}`);
+      lines.push(`URL: ${r.url}`);
+      if (r.created_at) lines.push(`Created: ${r.created_at}`);
+      if (r.error) lines.push(`Error: ${r.error}`);
+      lines.push("");
+    }
+
+    return {
+      content: [{ type: "text" as const, text: lines.join("\n") }],
+      details: { count: runs.length },
+    };
   },
 };

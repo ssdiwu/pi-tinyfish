@@ -29,43 +29,34 @@ export const tinyfish_run_get = {
     if (!apiKey) {
       return {
         content: [
-          {
-            type: "text" as const,
-            text: "TinyFish API key not configured. Run /tinyfish-login to set it up.",
-          },
+          { type: "text" as const, text: "TinyFish API key not configured. Run /tinyfish-login to set it up." },
         ],
+        details: {},
       };
     }
 
-    try {
-      const run = await getRun(apiKey, params.runId);
+    const run = await getRun(apiKey, params.runId);
 
-      let output = [
-        `## Run ${run.id}`,
-        `Status: ${run.status}`,
-        `Goal: ${run.goal}`,
-        `URL: ${run.url}`,
-        `Created: ${run.created_at ?? "N/A"}`,
-        `Updated: ${run.updated_at ?? "N/A"}`,
-      ].join("\n");
+    let output = [
+      `## Run ${run.id}`,
+      `Status: ${run.status}`,
+      `Goal: ${run.goal}`,
+      `URL: ${run.url}`,
+      `Created: ${run.created_at ?? "N/A"}`,
+      `Updated: ${run.updated_at ?? "N/A"}`,
+    ].join("\n");
 
-      if (run.result) {
-        output += `\n\n## Result\n${JSON.stringify(run.result, null, 2)}`;
-      }
-
-      if (run.error) {
-        output += `\n\n## Error\n${run.error}`;
-      }
-
-      return {
-        content: [{ type: "text" as const, text: output }],
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return {
-        content: [{ type: "text" as const, text: `Failed to get run: ${message}` }],
-        isError: true,
-      };
+    if (run.result) {
+      output += `\n\n## Result\n${JSON.stringify(run.result, null, 2)}`;
     }
+
+    if (run.error) {
+      output += `\n\n## Error\n${run.error}`;
+    }
+
+    return {
+      content: [{ type: "text" as const, text: output }],
+      details: { runId: run.id, status: run.status },
+    };
   },
 };

@@ -1,7 +1,6 @@
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
-import { readFile, writeFile, mkdir, rename, unlink, stat } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { readFile, writeFile, mkdir, rename, unlink, existsSync } from "node:fs/promises";
 
 // ---------------------------------------------------------------------------
 // Paths
@@ -54,7 +53,6 @@ async function atomicWrite(filePath: string, data: string): Promise<void> {
     await writeFile(tmp, data, { encoding: "utf-8", mode: FILE_MODE });
     await rename(tmp, filePath);
   } catch (e) {
-    // Clean up temp on failure
     try { await unlink(tmp); } catch { /* ignore */ }
     throw e;
   }
@@ -100,13 +98,9 @@ export async function deleteConfig(): Promise<void> {
  *   3. undefined → caller should prompt login
  */
 export function resolveApiKey(config: TinyFishConfig | null): string | undefined {
-  // 1. Config file
   if (config?.apiKey?.trim()) return config.apiKey.trim();
-
-  // 2. Env fallback (CI / debugging)
   const envKey = process.env.TINYFISH_API_KEY?.trim();
   if (envKey) return envKey;
-
   return undefined;
 }
 

@@ -1,4 +1,4 @@
-import type { PiExtension } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import {
   readConfig,
   writeConfig,
@@ -20,8 +20,7 @@ import { tinyfish_run_cancel } from "./tools/run-cancel.js";
 // Extension entry point
 // ---------------------------------------------------------------------------
 
-const extension: PiExtension = async (pi) => {
-
+export default function extension(pi: ExtensionAPI) {
   // ===================================================================
   // Register tools
   // ===================================================================
@@ -143,6 +142,4 @@ const extension: PiExtension = async (pi) => {
       ctx.ui.notify({ type: "success", message: "TinyFish API key removed." });
     },
   });
-};
-
-export default extension;
+}

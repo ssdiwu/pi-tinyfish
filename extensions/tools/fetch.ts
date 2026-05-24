@@ -1,7 +1,7 @@
 import { Type, Static } from "@earendil-works/pi-ai";
 import { readConfig, resolveApiKey, getDefaultFetchFormat } from "../config.js";
 import { fetchUrls } from "../api.js";
-import { formatFetchResults, truncateText } from "../format.js";
+import { formatFetchResults, truncateOutput } from "../format.js";
 
 // ---------------------------------------------------------------------------
 // Parameters schema
@@ -48,17 +48,14 @@ export const tinyfish_fetch = {
   parameters: FetchParams,
 
   async execute(_id: string, params: FetchParamsType) {
-    // Resolve config & API key
     const config = await readConfig();
     const apiKey = resolveApiKey(config);
     if (!apiKey) {
       return {
         content: [
-          {
-            type: "text" as const,
-            text: "TinyFish API key not configured. Run /tinyfish-login to set it up.",
-          },
+          { type: "text" as const, text: "TinyFish API key not configured. Run /tinyfish-login to set it up." },
         ],
+        details: {},
       };
     }
 
@@ -70,42 +67,34 @@ export const tinyfish_fetch = {
     if (urls.length === 0) {
       return {
         content: [{ type: "text" as const, text: "Either 'url' or 'urls' parameter is required." }],
-        isError: true,
+        details: { error: "missing_urls" },
       };
     }
 
     if (urls.length > 10) {
       return {
         content: [{ type: "text" as const, text: "Maximum 10 URLs per request." }],
-        isError: true,
+        details: { error: "too_many_urls" },
       };
     }
 
-    // Apply defaults
     const format = params.format ?? getDefaultFetchFormat(config);
 
-    try {
-      const response = await fetchUrls(apiKey, {
-        urls,
-        format: format as "markdown" | "html" | "json",
-        links: params.links,
-        imageLinks: params.imageLinks,
-      });
+    const response = await fetchUrls(apiKey, {
+      urls,
+      format: format as "markdown" | "html" | "json",
+      links: params.links,
+      imageLinks: params.imageLinks,
+    });
 
-      let output = formatFetchResults(response.results ?? []);
-      if (params.maxBytes) {
-        output = truncateText(output, params.maxBytes);
-      }
-
-      return {
-        content: [{ type: "text" as const, text: output }],
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return {
-        content: [{ type: "text" as const, text: `Fetch failed: ${message}` }],
-        isError: true,
-      };
+    let output = formatFetchResults(response.results ?? []);
+    if (params.maxBytes) {
+      output = truncateOutput(output, params.maxBytes);
     }
+
+    return {
+      content: [{ type: "text" as const, text: output }],
+      details: { urlCount: urls.length, resultCount: response.results?.length ?? 0 },
+    };
   },
 };

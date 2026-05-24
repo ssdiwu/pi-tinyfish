@@ -8,23 +8,13 @@ const SEARCH_BASE = "https://api.search.tinyfish.ai";
 const FETCH_BASE = "https://api.fetch.tinyfish.ai";
 const AGENT_BASE = "https://agent.tinyfish.ai";
 
-// Default timeouts (ms)
-export const DEFAULT_TIMEOUT = 60_000;       // 60s for sync calls
-export const DEFAULT_SSE_TIMEOUT = 300_000;   // 5min for SSE
+export const DEFAULT_TIMEOUT = 60_000;
+export const DEFAULT_SSE_TIMEOUT = 300_000;
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export interface TinyFishError {
-  status: number;
-  message: string;
-  body?: unknown;
-}
-
-/**
- * Thrown when TinyFish returns a non-2xx response.
- */
 export class TinyFishApiError extends Error {
   constructor(
     public readonly status: number,
@@ -189,7 +179,7 @@ export interface AgentRunParams {
 
 /**
  * Execute an agent run via SSE. Calls onUpdate for each event.
- * Returns the final COMPLETE event data.
+ * Returns the final data from the COMPLETE event (or last event).
  */
 export async function agentRunSSE(
   apiKey: string,
@@ -201,7 +191,6 @@ export async function agentRunSSE(
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-  // Chain external signal
   if (signal) {
     if (signal.aborted) { clearTimeout(timer); throw new DOMException("Aborted", "AbortError"); }
     signal.addEventListener("abort", () => controller.abort(), { once: true });
@@ -221,7 +210,6 @@ export async function agentRunSSE(
       throw new TinyFishApiError(res.status, `Agent run failed`, body);
     }
 
-    // Parse SSE stream
     const reader = res.body?.getReader();
     if (!reader) throw new Error("No response body from SSE stream");
 

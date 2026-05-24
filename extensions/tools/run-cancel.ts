@@ -29,31 +29,19 @@ export const tinyfish_run_cancel = {
     if (!apiKey) {
       return {
         content: [
-          {
-            type: "text" as const,
-            text: "TinyFish API key not configured. Run /tinyfish-login to set it up.",
-          },
+          { type: "text" as const, text: "TinyFish API key not configured. Run /tinyfish-login to set it up." },
         ],
+        details: {},
       };
     }
 
-    try {
-      await cancelRun(apiKey, params.runId);
+    await cancelRun(apiKey, params.runId);
 
-      return {
-        content: [
-          {
-            type: "text" as const,
-            text: `Run ${params.runId} has been cancelled.`,
-          },
-        ],
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return {
-        content: [{ type: "text" as const, text: `Failed to cancel run: ${message}` }],
-        isError: true,
-      };
-    }
+    return {
+      content: [
+        { type: "text" as const, text: `Run ${params.runId} has been cancelled.` },
+      ],
+      details: { runId: params.runId, cancelled: true },
+    };
   },
 };

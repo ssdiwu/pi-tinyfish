@@ -1,7 +1,7 @@
 import { Type, Static } from "@earendil-works/pi-ai";
 import { readConfig, resolveApiKey, getDefaultLocation, getDefaultLanguage } from "../config.js";
 import { search } from "../api.js";
-import { formatSearchResults, truncateText } from "../format.js";
+import { formatSearchResults, truncateOutput } from "../format.js";
 
 // ---------------------------------------------------------------------------
 // Parameters schema
@@ -37,46 +37,35 @@ export const tinyfish_search = {
   parameters: SearchParams,
 
   async execute(_id: string, params: SearchParamsType) {
-    // Resolve config & API key
     const config = await readConfig();
     const apiKey = resolveApiKey(config);
     if (!apiKey) {
       return {
         content: [
-          {
-            type: "text" as const,
-            text: "TinyFish API key not configured. Run /tinyfish-login to set it up.",
-          },
+          { type: "text" as const, text: "TinyFish API key not configured. Run /tinyfish-login to set it up." },
         ],
+        details: {},
       };
     }
 
-    // Apply defaults
     const location = params.location ?? getDefaultLocation(config);
     const language = params.language ?? getDefaultLanguage(config);
 
-    try {
-      const response = await search(apiKey, {
-        query: params.query,
-        location,
-        language,
-        page: params.page,
-      });
+    const response = await search(apiKey, {
+      query: params.query,
+      location,
+      language,
+      page: params.page,
+    });
 
-      let output = formatSearchResults(response.results ?? []);
-      if (params.maxBytes) {
-        output = truncateText(output, params.maxBytes);
-      }
-
-      return {
-        content: [{ type: "text" as const, text: output }],
-      };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return {
-        content: [{ type: "text" as const, text: `Search failed: ${message}` }],
-        isError: true,
-      };
+    let output = formatSearchResults(response.results ?? []);
+    if (params.maxBytes) {
+      output = truncateOutput(output, params.maxBytes);
     }
+
+    return {
+      content: [{ type: "text" as const, text: output }],
+      details: { resultCount: response.results?.length ?? 0 },
+    };
   },
 };
