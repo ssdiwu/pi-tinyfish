@@ -45,6 +45,14 @@ export const tinyfish_fetch = {
   label: "TinyFish Fetch",
   description:
     "Fetch and extract clean content from one or more URLs. Renders JavaScript-heavy pages and returns text in markdown, HTML, or JSON format.",
+  promptSnippet: "Extract readable content from known URLs (renders JS, handles SPA, returns clean text/markdown)",
+  promptGuidelines: [
+    "Use tinyfish_fetch when you already have one or more specific URLs and need their content.",
+    "Prefer tinyfish_fetch over tinyfish_agent_run when you only need to read page content without interaction.",
+    "Use format='markdown' for LLM consumption (default), 'html' for raw markup, 'json' for structured data.",
+    "Set links=true or imageLinks=true when the user needs to discover linked resources.",
+    "Batch up to 10 URLs in a single call when fetching multiple pages.",
+  ],
   parameters: FetchParams,
 
   async execute(_id: string, params: FetchParamsType) {

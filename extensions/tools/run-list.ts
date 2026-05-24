@@ -46,6 +46,12 @@ export const tinyfish_run_list = {
   label: "TinyFish List Runs",
   description:
     "List and search historical TinyFish Agent automation runs. Filter by status, goal text, or date range.",
+  promptSnippet: "List and search past automation runs by status, goal text, or time range",
+  promptGuidelines: [
+    "Use tinyfish_run_list to find previous automation runs or check run history.",
+    "Filter by status='COMPLETED' to find successful runs with results.",
+    "Use the goal parameter for fuzzy text search across run descriptions.",
+  ],
   parameters: RunListParams,
 
   async execute(_id: string, params: RunListParamsType) {

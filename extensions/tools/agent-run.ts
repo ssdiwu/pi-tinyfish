@@ -52,6 +52,16 @@ export const tinyfish_agent_run = {
   label: "TinyFish Agent Run",
   description:
     "Execute a goal-driven browser automation task via TinyFish Agent. The agent navigates a real browser to complete tasks like data extraction, form filling, multi-step workflows. Results stream in real-time.",
+  promptSnippet: "Automate multi-step browser tasks: extract data, fill forms, navigate workflows, scrape dynamic pages",
+  promptGuidelines: [
+    "Use tinyfish_agent_run when the task requires multiple steps on a website (click, scroll, extract, submit).",
+    "Write explicit, structured goals: specify what to extract (field names, format), what actions to take, and expected output.",
+    "Always include 'Return as JSON' or 'Return as markdown list' in the goal for structured extraction tasks.",
+    "Use browserProfile='stealth' for sites with bot detection or anti-scraping measures.",
+    "Prefer tinyfish_fetch for single-page content reading; prefer tinyfish_search for URL discovery.",
+    "The agent streams progress in real-time — use onUpdate to show the user intermediate steps.",
+    "Set reasonable maxBytes for large extraction tasks to avoid exceeding context limits.",
+  ],
   parameters: AgentRunParams,
   executionMode: "sequential" as const,
 

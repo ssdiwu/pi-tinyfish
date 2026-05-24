@@ -68,6 +68,20 @@ describe("tools — registration shape validation", () => {
         expect(Object.keys(tool.parameters.properties).length).toBeGreaterThan(0);
       });
 
+      it("has promptSnippet for system prompt visibility", () => {
+        expect(typeof tool.promptSnippet).toBe("string");
+        expect(tool.promptSnippet.length).toBeGreaterThan(0);
+      });
+
+      it("has promptGuidelines array with tool-specific instructions", () => {
+        expect(Array.isArray(tool.promptGuidelines)).toBe(true);
+        expect(tool.promptGuidelines.length).toBeGreaterThan(0);
+        for (const guideline of tool.promptGuidelines) {
+          expect(typeof guideline).toBe("string");
+          expect(guideline.length).toBeGreaterThan(10);
+        }
+      });
+
       it("has an execute function", () => {
         expect(typeof tool.execute).toBe("function");
       });

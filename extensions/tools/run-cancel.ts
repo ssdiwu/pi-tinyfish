@@ -21,6 +21,11 @@ export const tinyfish_run_cancel = {
   label: "TinyFish Cancel Run",
   description:
     "Cancel an in-progress or pending TinyFish Agent automation run.",
+  promptSnippet: "Cancel a running or pending automation run to stop execution and save resources",
+  promptGuidelines: [
+    "Use tinyfish_run_cancel when a tinyfish_agent_run is taking too long or no longer needed.",
+    "Always confirm with the user before cancelling a run unless they explicitly asked to stop.",
+  ],
   parameters: RunCancelParams,
 
   async execute(_id: string, params: RunCancelParamsType) {

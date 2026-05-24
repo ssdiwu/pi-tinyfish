@@ -34,6 +34,13 @@ export const tinyfish_search = {
   label: "TinyFish Search",
   description:
     "Search the web using TinyFish Search API. Returns ranked results with titles, snippets, and URLs.",
+  promptSnippet: "Search the web for current information, discover URLs, find answers to factual questions",
+  promptGuidelines: [
+    "Use tinyfish_search when the user needs to find information on the web, discover URLs, or get up-to-date search results.",
+    "Prefer tinyfish_search over tinyfish_fetch when you don't have a specific URL yet.",
+    "Use location and language parameters to match the user's context (e.g., CN/zh for Chinese users).",
+    "Set maxBytes when you only need a few top results to save context space.",
+  ],
   parameters: SearchParams,
 
   async execute(_id: string, params: SearchParamsType) {

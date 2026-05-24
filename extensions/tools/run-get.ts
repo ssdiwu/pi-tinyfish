@@ -21,6 +21,11 @@ export const tinyfish_run_get = {
   label: "TinyFish Get Run",
   description:
     "Get detailed status and result of a specific TinyFish Agent automation run by its ID.",
+  promptSnippet: "Check the status and retrieve results of a specific automation run by ID",
+  promptGuidelines: [
+    "Use tinyfish_run_get when you have a run ID (from tinyfish_agent_run) and need to check its result or status.",
+    "Call this after tinyfish_agent_run completes to get the full structured result.",
+  ],
   parameters: RunGetParams,
 
   async execute(_id: string, params: RunGetParamsType) {
