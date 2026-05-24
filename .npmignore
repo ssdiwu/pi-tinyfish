@@ -1,0 +1,21 @@
+# Tests
+tests/
+vitest.config.ts
+
+# Dev
+node_modules/
+package-lock.json
+.npmrc
+
+# Git
+.git/
+.gitignore
+ISSUE-1.md
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
