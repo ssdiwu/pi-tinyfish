@@ -44,27 +44,23 @@ export default function extension(pi: ExtensionAPI) {
 
       if (existing?.apiKey) {
         const masked = maskApiKey(existing.apiKey);
-        const confirmed = await ctx.ui.confirm({
-          title: "Replace existing key?",
-          message: `Current key: ${masked}\nDo you want to replace it?`,
-          confirmText: "Replace",
-          cancelText: "Cancel",
-        });
+        const confirmed = await ctx.ui.confirm(
+          "Replace existing key?",
+          `Current key: ${masked}\nDo you want to replace it?`,
+        );
         if (!confirmed) {
-          ctx.ui.notify({ type: "info", message: "Login cancelled." });
+          ctx.ui.notify("Login cancelled.", "info");
           return;
         }
       }
 
-      const apiKey = await ctx.ui.input({
-        title: "TinyFish API Key",
-        message: "Paste your API key (get one at https://agent.tinyfish.ai/api-keys)",
-        placeholder: "tf_...",
-        password: true,
-      });
+      const apiKey = await ctx.ui.input(
+        "TinyFish API Key",
+        "Paste your API key (get one at https://agent.tinyfish.ai/api-keys)",
+      );
 
       if (!apiKey?.trim()) {
-        ctx.ui.notify({ type: "warning", message: "No key provided. Login cancelled." });
+        ctx.ui.notify("No key provided. Login cancelled.", "warning");
         return;
       }
 
@@ -74,10 +70,7 @@ export default function extension(pi: ExtensionAPI) {
       };
 
       await writeConfig(config);
-      ctx.ui.notify({
-        type: "success",
-        message: `API key saved: ${maskApiKey(apiKey.trim())}`,
-      });
+      ctx.ui.notify(`API key saved: ${maskApiKey(apiKey.trim())}`, "success");
     },
   });
 
@@ -89,20 +82,18 @@ export default function extension(pi: ExtensionAPI) {
       const apiKey = resolveApiKey(config);
 
       if (!apiKey) {
-        ctx.ui.notify({
-          type: "warning",
-          message:
-            "TinyFish is not configured.\nRun /tinyfish-login to set up your API key.",
-        });
+        ctx.ui.notify(
+          "TinyFish is not configured.\nRun /tinyfish-login to set up your API key.",
+          "warning",
+        );
         return;
       }
 
       const source = config?.apiKey ? "config file" : "environment variable";
       const masked = maskApiKey(apiKey);
 
-      ctx.ui.notify({
-        type: "info",
-        message: [
+      ctx.ui.notify(
+        [
           `TinyFish Status: ✅ Connected`,
           `Key source: ${source}`,
           `Key: ${masked}`,
@@ -111,7 +102,8 @@ export default function extension(pi: ExtensionAPI) {
           `Fetch format: ${config?.defaultFetchFormat ?? "markdown"}`,
           `Browser profile: ${config?.defaultBrowserProfile ?? "lite"}`,
         ].join("\n"),
-      });
+        "info",
+      );
     },
   });
 
@@ -122,24 +114,22 @@ export default function extension(pi: ExtensionAPI) {
       const config = await readConfig();
 
       if (!config?.apiKey && !process.env.TINYFISH_API_KEY) {
-        ctx.ui.notify({ type: "info", message: "No TinyFish API key is currently stored." });
+        ctx.ui.notify("No TinyFish API key is currently stored.", "info");
         return;
       }
 
-      const confirmed = await ctx.ui.confirm({
-        title: "Remove API key?",
-        message: "This will delete your saved TinyFish API key from local storage.",
-        confirmText: "Remove",
-        cancelText: "Keep",
-      });
+      const confirmed = await ctx.ui.confirm(
+        "Remove API key?",
+        "This will delete your saved TinyFish API key from local storage.",
+      );
 
       if (!confirmed) {
-        ctx.ui.notify({ type: "info", message: "Logout cancelled." });
+        ctx.ui.notify("Logout cancelled.", "info");
         return;
       }
 
       await deleteConfig();
-      ctx.ui.notify({ type: "success", message: "TinyFish API key removed." });
+      ctx.ui.notify("TinyFish API key removed.", "success");
     },
   });
 }
