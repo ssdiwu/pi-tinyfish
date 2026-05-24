@@ -96,5 +96,7 @@ export function formatAgentEvent(event: { type: string; data: unknown }): string
 
 export function truncateOutput(text: string, maxBytes?: number): string {
   const limit = maxBytes ?? DEFAULT_MAX_BYTES;
-  return truncateHead(text, { maxBytes: limit });
+  const result = truncateHead(text, { maxBytes: limit });
+  // truncateHead returns TruncationResult { content, truncated, ... }
+  return typeof result === "string" ? result : (result?.content ?? String(result));
 }

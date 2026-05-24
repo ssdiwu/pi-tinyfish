@@ -16,13 +16,14 @@ export const DEFAULT_SSE_TIMEOUT = 300_000;
 // ---------------------------------------------------------------------------
 
 export class TinyFishApiError extends Error {
-  constructor(
-    public readonly status: number,
-    message: string,
-    public readonly body?: unknown,
-  ) {
+  public readonly status: number;
+  public readonly body?: unknown;
+
+  constructor(status: number, message: string, body?: unknown) {
     super(`TinyFish API ${status}: ${message}`);
     this.name = "TinyFishApiError";
+    this.status = status;
+    this.body = body;
   }
 }
 

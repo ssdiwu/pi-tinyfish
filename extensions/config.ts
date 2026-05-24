@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
-import { readFile, writeFile, mkdir, rename, unlink, existsSync } from "node:fs/promises";
+import { readFile, writeFile, mkdir, rename, unlink } from "node:fs/promises";
+import { existsSync } from "node:fs";
 
 // ---------------------------------------------------------------------------
 // Paths
@@ -116,18 +117,18 @@ export function maskApiKey(key: string): string {
 // Defaults helpers
 // ---------------------------------------------------------------------------
 
-export function getDefaultLocation(config: TinyFishConfig): string {
-  return config.defaultLocation ?? "US";
+export function getDefaultLocation(config?: TinyFishConfig | null): string {
+  return config?.defaultLocation ?? "US";
 }
 
-export function getDefaultLanguage(config: TinyFishConfig): string {
-  return config.defaultLanguage ?? "en";
+export function getDefaultLanguage(config?: TinyFishConfig | null): string {
+  return config?.defaultLanguage ?? "en";
 }
 
-export function getDefaultFetchFormat(config: TinyFishConfig): string {
-  return config.defaultFetchFormat ?? "markdown";
+export function getDefaultFetchFormat(config?: TinyFishConfig | null): string {
+  return config?.defaultFetchFormat ?? "markdown";
 }
 
-export function getDefaultBrowserProfile(config: TinyFishConfig): string {
-  return config.defaultBrowserProfile ?? "lite";
+export function getDefaultBrowserProfile(config?: TinyFishConfig | null): string {
+  return config?.defaultBrowserProfile ?? "lite";
 }
