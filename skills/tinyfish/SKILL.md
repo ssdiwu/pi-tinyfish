@@ -1,3 +1,8 @@
+---
+name: tinyfish
+description: TinyFish Web Agent tools — search, fetch, and goal-driven browser automation via TinyFish API
+---
+
 # TinyFish
 
 Use TinyFish tools when the user needs:
