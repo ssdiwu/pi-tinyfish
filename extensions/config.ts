@@ -114,15 +114,94 @@ export function maskApiKey(key: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Locale detection
+// ---------------------------------------------------------------------------
+
+/**
+ * Detect user locale from OS environment variables.
+ * Returns a BCP 47-like tag (e.g. "zh-CN", "ja", "ko") or undefined.
+ *
+ * Priority: PI_LOCALE > LC_ALL > LANG
+ */
+export function detectLocale(): string | undefined {
+  const candidates = [
+    process.env.PI_LOCALE,
+    process.env.LC_ALL,
+    process.env.LANG,
+  ].filter(Boolean) as string[];
+
+  for (const raw of candidates) {
+    const s = raw.trim();
+    if (!s) continue;
+    // Strip encoding suffix: "zh_CN.UTF-8" -> "zh_CN" -> "zh-CN"
+    const base = s.split(".")[0]!.replace(/_/g, "-");
+    if (base) return base;
+  }
+  return undefined;
+}
+
+/**
+ * Map a locale tag to TinyFish API location + language codes.
+ * Returns { location, language } or null if unknown.
+ */
+export function localeToLocationLanguage(
+  locale?: string,
+): { location: string; language: string } | null {
+  if (!locale) return null;
+
+  const lang = locale.split("-")[0]?.toLowerCase() ?? "";
+  const region = locale.split("-")[1]?.toUpperCase() ?? "";
+
+  switch (lang) {
+    case "zh": {
+      // Simplified vs Traditional by region
+      if (region === "TW" || region === "HK") {
+        return { location: "TW", language: "zh-TW" };
+      }
+      return { location: "CN", language: "zh" };
+    }
+    case "ja":
+      return { location: "JP", language: "ja" };
+    case "ko":
+      return { location: "KR", language: "ko" };
+    case "de":
+      return { location: "DE", language: "de" };
+    case "fr":
+      return { location: "FR", language: "fr" };
+    case "es": {
+      // Default to Spain; Latin America variants could use region
+      if (region === "MX" || region === "AR" || region === "CO" || region === "CL" || region === "PE") {
+        return { location: region, language: "es" };
+      }
+      return { location: "ES", language: "es" };
+    }
+    case "pt": {
+      if (region === "BR") return { location: "BR", language: "pt-BR" };
+      return { location: "PT", language: "pt" };
+    }
+    case "ru":
+      return { location: "RU", language: "ru" };
+    case "ar":
+      return { location: "SA", language: "ar" };
+    default:
+      return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Defaults helpers
 // ---------------------------------------------------------------------------
 
 export function getDefaultLocation(config?: TinyFishConfig | null): string {
-  return config?.defaultLocation ?? "US";
+  if (config?.defaultLocation) return config.defaultLocation;
+  const mapped = localeToLocationLanguage(detectLocale());
+  return mapped?.location ?? "US";
 }
 
 export function getDefaultLanguage(config?: TinyFishConfig | null): string {
-  return config?.defaultLanguage ?? "en";
+  if (config?.defaultLanguage) return config.defaultLanguage;
+  const mapped = localeToLocationLanguage(detectLocale());
+  return mapped?.language ?? "en";
 }
 
 export function getDefaultFetchFormat(config?: TinyFishConfig | null): string {

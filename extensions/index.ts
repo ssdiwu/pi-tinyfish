@@ -5,6 +5,11 @@ import {
   deleteConfig,
   resolveApiKey,
   maskApiKey,
+  getDefaultLocation,
+  getDefaultLanguage,
+  getDefaultFetchFormat,
+  getDefaultBrowserProfile,
+  detectLocale,
   type TinyFishConfig,
 } from "./config.js";
 
@@ -91,16 +96,19 @@ export default function extension(pi: ExtensionAPI) {
 
       const source = config?.apiKey ? "config file" : "environment variable";
       const masked = maskApiKey(apiKey);
+      const effectiveLocation = getDefaultLocation(config);
+      const effectiveLanguage = getDefaultLanguage(config);
+      const detected = detectLocale();
 
       ctx.ui.notify(
         [
           `TinyFish Status: ✅ Connected`,
           `Key source: ${source}`,
           `Key: ${masked}`,
-          `Default location: ${config?.defaultLocation ?? "US"}`,
-          `Default language: ${config?.defaultLanguage ?? "en"}`,
-          `Fetch format: ${config?.defaultFetchFormat ?? "markdown"}`,
-          `Browser profile: ${config?.defaultBrowserProfile ?? "lite"}`,
+          `Default location: ${effectiveLocation}${detected ? ` (from locale: ${detected})` : ""}`,
+          `Default language: ${effectiveLanguage}${detected ? ` (from locale: ${detected})` : ""}`,
+          `Fetch format: ${getDefaultFetchFormat(config)}`,
+          `Browser profile: ${getDefaultBrowserProfile(config)}`,
         ].join("\n"),
         "info",
       );
