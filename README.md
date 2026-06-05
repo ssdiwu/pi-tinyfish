@@ -67,6 +67,41 @@ npm test             # vitest
 pi -e .             # load extension for testing
 ```
 
-## Design
+## Tool Result UI
 
-See [ISSUE-1.md](./ISSUE-1.md) for the complete design document.
+Tool results follow a three-layer information model so the LLM gets the full picture while the user only sees what they need on screen:
+
+| Layer | Field | Audience | Purpose |
+|-------|-------|----------|---------|
+| Full data | `content` | LLM | Complete output enters the next conversation turn — never truncated for the LLM |
+| Structured | `details` | Renderer & state | Compact summary (status, count, urls) used by `renderResult` and persisted in session state |
+| Visual | `renderResult` | Human | Default view is a one-line summary; press `Ctrl+O` (`app.tools.expand`) to expand the full markdown |
+
+This applies to all six tools. See [extensions/tools/README.md](./extensions/tools/README.md) for the per-tool contract.
+
+## Directory layout
+
+```
+extensions/
+  index.ts          # Extension entry — registers tools and /commands
+  api.ts            # TinyFish REST/SSE client
+  config.ts         # ~/.pi/agent/pi-tinyfish.json read/write
+  format.ts         # Output text formatters
+  render.ts         # Shared renderResult helpers (collapsible markdown)
+  tools/
+    search.ts       # tinyfish_search
+    fetch.ts        # tinyfish_fetch
+    agent-run.ts    # tinyfish_agent_run
+    run-get.ts      # tinyfish_run_get
+    run-list.ts     # tinyfish_run_list
+    run-cancel.ts   # tinyfish_run_cancel
+skills/
+  tinyfish/
+    SKILL.md        # Agent-facing usage guide
+```
+
+## Design notes
+
+- All six tools are **synchronous** — `execute()` awaits the full response. No background runs, no `pi.sendMessage` injection. The LLM sees results in the natural tool-call return.
+- `details` is the source of truth for collapsible summaries; `content` is the source of truth for LLM context. They are intentionally not derived from each other.
+- `truncateOutput` (format.ts) only trims `content` when the caller passes `maxBytes`; it never silently strips data the LLM needs.

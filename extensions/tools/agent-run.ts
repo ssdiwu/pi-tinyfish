@@ -2,6 +2,7 @@ import { Type, Static } from "@earendil-works/pi-ai";
 import { readConfig, resolveApiKey, getDefaultBrowserProfile } from "../config.js";
 import { agentRunSSE } from "../api.js";
 import { formatAgentEvent, truncateOutput } from "../format.js";
+import { renderCollapsibleMarkdown } from "../render.js";
 
 // ---------------------------------------------------------------------------
 // Parameters schema
@@ -121,9 +122,20 @@ export const tinyfish_agent_run = {
       output = truncateOutput(output, params.maxBytes);
     }
 
+    const eventCount = outputLines.length;
+    const hasResult = !!(result && typeof result === "object");
     return {
       content: [{ type: "text" as const, text: output }],
-      details: { completed: true },
+      details: { completed: true, eventCount, hasResult },
     };
+  },
+
+  renderResult(result, options, theme) {
+    const count = (result.details?.eventCount as number | undefined) ?? 0;
+    const hasResult = result.details?.hasResult as boolean | undefined;
+    const summary = hasResult
+      ? `✅ Agent completed (${count} event${count === 1 ? "" : "s"})`
+      : `✅ Agent completed (no structured result)`;
+    return renderCollapsibleMarkdown(result, options, theme, summary);
   },
 };

@@ -1,6 +1,7 @@
 import { Type, Static } from "@earendil-works/pi-ai";
 import { readConfig, resolveApiKey } from "../config.js";
 import { getRun } from "../api.js";
+import { renderCollapsibleMarkdown } from "../render.js";
 
 // ---------------------------------------------------------------------------
 // Parameters schema
@@ -63,5 +64,12 @@ export const tinyfish_run_get = {
       content: [{ type: "text" as const, text: output }],
       details: { runId: run.id, status: run.status },
     };
+  },
+
+  renderResult(result, options, theme) {
+    const runId = (result.details?.runId as string | undefined) ?? "unknown";
+    const status = (result.details?.status as string | undefined) ?? "UNKNOWN";
+    const summary = `📋 Run ${runId} — ${status}`;
+    return renderCollapsibleMarkdown(result, options, theme, summary);
   },
 };

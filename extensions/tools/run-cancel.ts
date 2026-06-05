@@ -1,6 +1,7 @@
 import { Type, Static } from "@earendil-works/pi-ai";
 import { readConfig, resolveApiKey } from "../config.js";
 import { cancelRun } from "../api.js";
+import { Text } from "@earendil-works/pi-tui";
 
 // ---------------------------------------------------------------------------
 // Parameters schema
@@ -48,5 +49,11 @@ export const tinyfish_run_cancel = {
       ],
       details: { runId: params.runId, cancelled: true },
     };
+  },
+
+  // Cancel is a terminal state with one short line — no expand needed.
+  renderResult(result, _options, theme) {
+    const runId = (result.details?.runId as string | undefined) ?? "unknown";
+    return new Text(theme.fg("success", `🚫 Run ${runId} cancelled`), 0, 0);
   },
 };

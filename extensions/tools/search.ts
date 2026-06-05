@@ -2,6 +2,7 @@ import { Type, Static } from "@earendil-works/pi-ai";
 import { readConfig, resolveApiKey, getDefaultLocation, getDefaultLanguage } from "../config.js";
 import { search } from "../api.js";
 import { formatSearchResults, truncateOutput } from "../format.js";
+import { renderCollapsibleMarkdown } from "../render.js";
 
 // ---------------------------------------------------------------------------
 // Parameters schema
@@ -70,9 +71,16 @@ export const tinyfish_search = {
       output = truncateOutput(output, params.maxBytes);
     }
 
+    const resultCount = response.results?.length ?? 0;
     return {
       content: [{ type: "text" as const, text: output }],
-      details: { resultCount: response.results?.length ?? 0 },
+      details: { resultCount },
     };
+  },
+
+  renderResult(result, options, theme) {
+    const count = (result.details?.resultCount as number | undefined) ?? 0;
+    const summary = `🔍 Found ${count} result${count === 1 ? "" : "s"}`;
+    return renderCollapsibleMarkdown(result, options, theme, summary);
   },
 };

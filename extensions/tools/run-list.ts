@@ -1,6 +1,7 @@
 import { Type, Static } from "@earendil-works/pi-ai";
 import { readConfig, resolveApiKey } from "../config.js";
 import { listRuns } from "../api.js";
+import { renderCollapsibleMarkdown } from "../render.js";
 
 // ---------------------------------------------------------------------------
 // Parameters schema
@@ -99,5 +100,11 @@ export const tinyfish_run_list = {
       content: [{ type: "text" as const, text: lines.join("\n") }],
       details: { count: runs.length },
     };
+  },
+
+  renderResult(result, options, theme) {
+    const count = (result.details?.count as number | undefined) ?? 0;
+    const summary = `📜 ${count} run${count === 1 ? "" : "s"}`;
+    return renderCollapsibleMarkdown(result, options, theme, summary);
   },
 };
