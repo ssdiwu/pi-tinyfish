@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import * as path from "node:path";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname ?? ".", "..");
-const formatPath = path.join(PROJECT_ROOT, "extensions", "format.ts");
+const formatPath = path.join(PROJECT_ROOT, "src", "format.ts");
 
 describe("format — output formatting", () => {
   // ---------------------------------------------------------------------------

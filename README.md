@@ -77,13 +77,14 @@ Tool results follow a three-layer information model so the LLM gets the full pic
 | Structured | `details` | Renderer & state | Compact summary (status, count, urls) used by `renderResult` and persisted in session state |
 | Visual | `renderResult` | Human | Default view is a one-line summary; press `Ctrl+O` (`app.tools.expand`) to expand the full markdown |
 
-This applies to all six tools. See [extensions/tools/README.md](./extensions/tools/README.md) for the per-tool contract.
+This applies to all six tools. See [src/tools/README.md](./src/tools/README.md) for the per-tool contract.
 
 ## Directory layout
 
 ```
-extensions/
-  index.ts          # Extension entry — registers tools and /commands
+index.ts               # Standard package entry — re-exports src/index.ts
+src/
+  index.ts          # Extension implementation — registers tools and /commands
   api.ts            # TinyFish REST/SSE client
   config.ts         # ~/.pi/agent/pi-tinyfish.json read/write
   format.ts         # Output text formatters

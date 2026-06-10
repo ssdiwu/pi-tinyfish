@@ -6,7 +6,7 @@ const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname ?? ".", "..");
-const apiPath = path.join(PROJECT_ROOT, "extensions", "api.ts");
+const apiPath = path.join(PROJECT_ROOT, "src", "api.ts");
 
 describe("api — TinyFish REST client", () => {
   beforeEach(() => {

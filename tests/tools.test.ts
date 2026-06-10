@@ -7,12 +7,12 @@ const PROJECT_ROOT = path.resolve(import.meta.dirname ?? ".", "..");
 
 // Tool file paths (absolute)
 const toolImports = {
-  search: path.join(PROJECT_ROOT, "extensions", "tools", "search.ts"),
-  fetch: path.join(PROJECT_ROOT, "extensions", "tools", "fetch.ts"),
-  "agent-run": path.join(PROJECT_ROOT, "extensions", "tools", "agent-run.ts"),
-  "run-get": path.join(PROJECT_ROOT, "extensions", "tools", "run-get.ts"),
-  "run-list": path.join(PROJECT_ROOT, "extensions", "tools", "run-list.ts"),
-  "run-cancel": path.join(PROJECT_ROOT, "extensions", "tools", "run-cancel.ts"),
+  search: path.join(PROJECT_ROOT, "src", "tools", "search.ts"),
+  fetch: path.join(PROJECT_ROOT, "src", "tools", "fetch.ts"),
+  "agent-run": path.join(PROJECT_ROOT, "src", "tools", "agent-run.ts"),
+  "run-get": path.join(PROJECT_ROOT, "src", "tools", "run-get.ts"),
+  "run-list": path.join(PROJECT_ROOT, "src", "tools", "run-list.ts"),
+  "run-cancel": path.join(PROJECT_ROOT, "src", "tools", "run-cancel.ts"),
 } as const;
 
 type ToolShape = {

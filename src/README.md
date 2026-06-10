@@ -1,6 +1,6 @@
-# extensions/
+# src/
 
-Pi extension entry point and shared code for pi-tinyfish.
+Pi extension implementation and shared code for pi-tinyfish. The package root `index.ts` is the standard Pi package entry and re-exports `src/index.ts`.
 
 ## Files
 

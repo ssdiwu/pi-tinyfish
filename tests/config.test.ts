@@ -6,7 +6,7 @@ import * as os from "node:os";
 
 // Resolve paths from project root (tests/ runs from project root with vitest)
 const PROJECT_ROOT = path.resolve(import.meta.dirname ?? ".", "..");
-const configPath = path.join(PROJECT_ROOT, "extensions/config.ts");
+const configPath = path.join(PROJECT_ROOT, "src/config.ts");
 
 describe("config", () => {
   let tmpDir: string;
