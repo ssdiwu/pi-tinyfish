@@ -1,6 +1,7 @@
 import { Type, Static } from "@earendil-works/pi-ai";
 import { readConfig, resolveApiKey } from "../config.js";
 import { getRun } from "../api.js";
+import { formatResultProjection } from "../format.js";
 import { renderCollapsibleMarkdown } from "../render.js";
 
 // ---------------------------------------------------------------------------
@@ -53,7 +54,7 @@ export const tinyfish_run_get = {
     ].join("\n");
 
     if (run.result) {
-      output += `\n\n## Result\n${JSON.stringify(run.result, null, 2)}`;
+      output += `\n\n## Result\n${formatResultProjection(run.result)}`;
     }
 
     if (run.error) {

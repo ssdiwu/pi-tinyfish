@@ -1,7 +1,7 @@
 import { Type, Static } from "@earendil-works/pi-ai";
 import { readConfig, resolveApiKey, getDefaultBrowserProfile } from "../config.js";
 import { agentRunSSE } from "../api.js";
-import { formatAgentEvent, truncateOutput } from "../format.js";
+import { formatAgentEvent, formatResultProjection, truncateOutput } from "../format.js";
 import { renderCollapsibleMarkdown } from "../render.js";
 
 // ---------------------------------------------------------------------------
@@ -114,7 +114,7 @@ export const tinyfish_agent_run = {
     // Append final structured result
     if (result && typeof result === "object") {
       outputLines.push("\n## Result");
-      outputLines.push(JSON.stringify(result, null, 2));
+      outputLines.push(formatResultProjection(result));
     }
 
     let output = outputLines.join("\n");

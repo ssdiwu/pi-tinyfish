@@ -1,6 +1,6 @@
 {
   "name": "pi-tinyfish-tools",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "TinyFish Web Agent tools for pi — search, fetch, and goal-driven browser automation",
   "type": "module",
   "keywords": [

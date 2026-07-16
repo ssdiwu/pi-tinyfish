@@ -149,10 +149,31 @@ describe("format — output formatting", () => {
       expect(result).toContain("Timeout exceeded");
     });
 
-    it("formats unknown events as JSON", async () => {
+    it("projects unknown object events as readable fields, not JSON", async () => {
       const { formatAgentEvent } = await import(formatPath);
-      const result = formatAgentEvent({ type: "CUSTOM_EVENT", data: { x: 1 } });
-      expect(result).toContain("CUSTOM_EVENT");
+      const result = formatAgentEvent({ type: "CUSTOM_EVENT", data: { x: 1, critical: "preserved" } });
+      expect(result).toContain("CUSTOM_EVENT:");
+      expect(result).toContain("\n- **critical**: preserved");
+      expect(result).not.toContain("{");
+    });
+
+    it("renders nested result fields as an indented Markdown tree", async () => {
+      const { formatResultProjection } = await import(formatPath);
+      const result = formatResultProjection({
+        critical: "preserved",
+        nested: { value: 1 },
+        items: [{ title: "First" }, "Second"],
+      });
+
+      expect(result).toBe([
+        "- **critical**: preserved",
+        "- **nested**:",
+        "  - **value**: 1",
+        "- **items**:",
+        "  - Item 1:",
+        "    - **title**: First",
+        "  - Second",
+      ].join("\n"));
     });
   });
 

@@ -66,8 +66,58 @@ export function formatFetchResults(results: Array<{
 }
 
 // ---------------------------------------------------------------------------
-// Agent run event formatting
+// Agent run event and structured-result projections
 // ---------------------------------------------------------------------------
+
+/** Convert unknown API data into a complete, human-readable Markdown field tree. */
+export function formatResultProjection(value: unknown): string {
+  if (!isStructuredValue(value)) return formatScalar(value);
+  return formatProjectionLines(value, 0).join("\n");
+}
+
+function formatProjectionLines(value: Record<string, unknown> | unknown[], depth: number): string[] {
+  const indent = "  ".repeat(depth);
+
+  if (Array.isArray(value)) {
+    if (!value.length) return [`${indent}- _No items_`];
+
+    return value.flatMap((item, index) => {
+      if (!isStructuredValue(item)) return `${indent}- ${formatScalar(item)}`;
+      return [`${indent}- Item ${index + 1}:`, ...formatProjectionLines(item, depth + 1)];
+    });
+  }
+
+  const entries = Object.entries(value);
+  if (!entries.length) return [`${indent}- _No fields_`];
+
+  return entries.flatMap(([key, item]) => {
+    const label = `**${escapeMarkdown(key)}**`;
+    if (!isStructuredValue(item)) return `${indent}- ${label}: ${formatScalar(item)}`;
+    return [`${indent}- ${label}:`, ...formatProjectionLines(item, depth + 1)];
+  });
+}
+
+function isStructuredValue(value: unknown): value is Record<string, unknown> | unknown[] {
+  return Array.isArray(value) || (typeof value === "object" && value !== null);
+}
+
+function formatScalar(value: unknown): string {
+  if (value === null) return "none";
+  if (value === undefined) return "not provided";
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
+    return String(value);
+  }
+  return "unavailable";
+}
+
+function escapeMarkdown(value: string): string {
+  return value.replace(/[\\`*_[\]<>]/g, "\\$&");
+}
+
+function formatEventPayload(value: unknown): string {
+  const projection = formatResultProjection(value);
+  return isStructuredValue(value) ? `\n${projection}` : ` ${projection}`;
+}
 
 export function formatAgentEvent(event: { type: string; data: unknown }): string {
   switch (event.type) {
@@ -77,16 +127,14 @@ export function formatAgentEvent(event: { type: string; data: unknown }): string
       return typeof event.data === "string"
         ? `🌐 Browser preview: ${event.data}`
         : "🌐 Browser session active";
-    case "PROGRESS": {
-      const msg = typeof event.data === "string" ? event.data : JSON.stringify(event.data);
-      return `⏳ ${msg}`;
-    }
+    case "PROGRESS":
+      return `⏳${formatEventPayload(event.data)}`;
     case "COMPLETE":
       return "✅ Agent completed.";
     case "ERROR":
-      return `❌ Error: ${typeof event.data === "string" ? event.data : JSON.stringify(event.data)}`;
+      return `❌ Error:${formatEventPayload(event.data)}`;
     default:
-      return `${event.type}: ${JSON.stringify(event.data)}`;
+      return `${event.type}:${formatEventPayload(event.data)}`;
   }
 }
 
