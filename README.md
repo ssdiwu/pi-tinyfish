@@ -71,35 +71,33 @@ pi -e .             # load extension for testing
 
 Tool results follow a three-layer information model so the LLM gets the full picture while the user only sees what they need on screen:
 
-| Layer | Field | Audience | Purpose |
-|-------|-------|----------|---------|
-| Full data | `content` | LLM | Complete output enters the next conversation turn — never truncated for the LLM |
-| Structured | `details` | Renderer & state | Compact summary (status, count, urls) used by `renderResult` and persisted in session state |
-| Visual | `renderResult` | Human | Default view is a one-line summary; press `Ctrl+O` (`app.tools.expand`) to expand the full markdown |
+- `content` — full output, enters the next conversation turn, never silently truncated.
+- `details` — compact structured summary (status, count, urls), used by `renderResult` and persisted in session state.
+- `renderResult` — visual view for humans: one-line summary by default, press `Ctrl+O` (`app.tools.expand`) to expand the full markdown.
 
-This applies to all six tools. See [src/tools/README.md](./src/tools/README.md) for the per-tool contract.
+This applies to all six tools. The field-level contract and per-tool summary strings live in [src/tools/README.md](./src/tools/README.md).
 
 ## Directory layout
 
 ```
 index.ts               # Standard package entry — re-exports src/index.ts
-src/
-  index.ts          # Extension implementation — registers tools and /commands
-  api.ts            # TinyFish REST/SSE client
-  config.ts         # ~/.pi/agent/pi-tinyfish.json read/write
-  format.ts         # Output text formatters
-  render.ts         # Shared renderResult helpers (collapsible markdown)
-  tools/
-    search.ts       # tinyfish_search
-    fetch.ts        # tinyfish_fetch
-    agent-run.ts    # tinyfish_agent_run
-    run-get.ts      # tinyfish_run_get
-    run-list.ts     # tinyfish_run_list
-    run-cancel.ts   # tinyfish_run_cancel
+src/                   # Extension implementation
+  index.ts             #   registers tools and /commands
+  api.ts               #   TinyFish REST/SSE client
+  config.ts            #   ~/.pi/agent/pi-tinyfish.json read/write
+  format.ts            #   Output text formatters
+  render.ts            #   Shared renderResult helpers
+  tools/               #   One file per registered tool
 skills/
   tinyfish/
-    SKILL.md        # Agent-facing usage guide
+    SKILL.md           # Agent-facing usage guide
 ```
+
+Per-file roles and implementation conventions are documented in [src/README.md](./src/README.md).
+
+## Documentation
+
+[doc/README.md](./doc/README.md) is the navigation entry for the repository's documents — current mechanism, ADRs (`doc/决策档案/`), and evidence/history (`doc/references/`).
 
 ## Design notes
 
