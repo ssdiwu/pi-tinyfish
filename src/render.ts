@@ -1,5 +1,5 @@
 import { Text, Markdown, type Component } from "@earendil-works/pi-tui";
-import { keyHint, getMarkdownTheme } from "@earendil-works/pi-coding-agent";
+import { keyHint, getMarkdownTheme, type Theme } from "@earendil-works/pi-coding-agent";
 
 // ---------------------------------------------------------------------------
 // Types — match the shape pi passes to renderResult
@@ -36,7 +36,7 @@ export interface RenderOptions {
 export function renderCollapsibleMarkdown(
   result: ToolResultLike,
   options: RenderOptions,
-  theme: { fg: (color: string, text: string) => string },
+  theme: Pick<Theme, "fg">,
   summary: string,
 ): Component {
   if (options.isPartial) {

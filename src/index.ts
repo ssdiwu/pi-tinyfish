@@ -75,7 +75,7 @@ export default function extension(pi: ExtensionAPI) {
       };
 
       await writeConfig(config);
-      ctx.ui.notify(`API key saved: ${maskApiKey(apiKey.trim())}`, "success");
+      ctx.ui.notify(`API key saved: ${maskApiKey(apiKey.trim())}`, "info");
     },
   });
 
@@ -137,7 +137,7 @@ export default function extension(pi: ExtensionAPI) {
       }
 
       await deleteConfig();
-      ctx.ui.notify("TinyFish API key removed.", "success");
+      ctx.ui.notify("TinyFish API key removed.", "info");
     },
   });
 }

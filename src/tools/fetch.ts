@@ -1,4 +1,5 @@
-import { Type, Static } from "@earendil-works/pi-ai";
+import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
+import { Type, type Static } from "typebox";
 import { readConfig, resolveApiKey, getDefaultFetchFormat } from "../config.js";
 import { fetchUrls } from "../api.js";
 import { formatFetchResults, truncateOutput } from "../format.js";
@@ -41,7 +42,7 @@ type FetchParamsType = Static<typeof FetchParams>;
 // Tool definition
 // ---------------------------------------------------------------------------
 
-export const tinyfish_fetch = {
+export const tinyfish_fetch: ToolDefinition<typeof FetchParams, Record<string, unknown>> = {
   name: "tinyfish_fetch",
   label: "TinyFish Fetch",
   description:
@@ -93,7 +94,7 @@ export const tinyfish_fetch = {
       urls,
       format: format as "markdown" | "html" | "json",
       links: params.links,
-      imageLinks: params.imageLinks,
+      image_links: params.imageLinks,
     });
 
     let output = formatFetchResults(response.results ?? []);

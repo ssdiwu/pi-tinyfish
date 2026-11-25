@@ -1,4 +1,5 @@
-import { Type, Static } from "@earendil-works/pi-ai";
+import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
+import { Type, type Static } from "typebox";
 import { readConfig, resolveApiKey, getDefaultBrowserProfile } from "../config.js";
 import { agentRunSSE } from "../api.js";
 import { formatAgentEvent, formatResultProjection, truncateOutput } from "../format.js";
@@ -48,7 +49,7 @@ type AgentRunParamsType = Static<typeof AgentRunParams>;
 // Tool definition
 // ---------------------------------------------------------------------------
 
-export const tinyfish_agent_run = {
+export const tinyfish_agent_run: ToolDefinition<typeof AgentRunParams, Record<string, unknown>> = {
   name: "tinyfish_agent_run",
   label: "TinyFish Agent Run",
   description:
@@ -70,7 +71,7 @@ export const tinyfish_agent_run = {
     _id: string,
     params: AgentRunParamsType,
     signal: AbortSignal | undefined,
-    onUpdate?: (partialResult: { content: Array<{ type: string; text: string }>; details: Record<string, unknown> }) => void,
+    onUpdate?: (partialResult: { content: Array<{ type: "text"; text: string }>; details: Record<string, unknown> }) => void,
   ) {
     const config = await readConfig();
     const apiKey = resolveApiKey(config);

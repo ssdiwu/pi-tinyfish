@@ -1,4 +1,5 @@
-import { Type, Static } from "@earendil-works/pi-ai";
+import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
+import { Type, type Static } from "typebox";
 import { readConfig, resolveApiKey } from "../config.js";
 import { cancelRun } from "../api.js";
 import { Text } from "@earendil-works/pi-tui";
@@ -17,7 +18,7 @@ type RunCancelParamsType = Static<typeof RunCancelParams>;
 // Tool definition
 // ---------------------------------------------------------------------------
 
-export const tinyfish_run_cancel = {
+export const tinyfish_run_cancel: ToolDefinition<typeof RunCancelParams, Record<string, unknown>> = {
   name: "tinyfish_run_cancel",
   label: "TinyFish Cancel Run",
   description:

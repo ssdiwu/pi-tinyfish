@@ -1,5 +1,7 @@
 # pi-tinyfish
 
+English · [简体中文](./README-zh.md)
+
 TinyFish Web Agent tools for **pi** — search, fetch, and goal-driven browser automation.
 
 ## Tools
@@ -18,7 +20,7 @@ TinyFish Web Agent tools for **pi** — search, fetch, and goal-driven browser a
 1. Install:
 
 ```bash
-pi install npm:pi-tinyfish
+pi install npm:pi-tinyfish-tools
 # or local:
 pi install ./pi-tinyfish
 ```
@@ -59,13 +61,19 @@ Fallback: `TINYFISH_API_KEY` env var for CI / debugging.
 | `/tinyfish-status` | Show configuration status (key never exposed) |
 | `/tinyfish-logout` | Remove stored API key |
 
-## Development
+## Development, tests, and public contracts
+
+The contributor rules, documentation index, and tests below are available in a source checkout.
 
 ```bash
 npm install          # peer deps
 npm test             # vitest
 pi -e .             # load extension for testing
 ```
+
+- Development and contribution rules: [`AGENTS.md`](./AGENTS.md) and [`doc/README.md`](./doc/README.md).
+- Tests: [`tests/README.md`](./tests/README.md) — configuration, TinyFish API client, output formatting, and tool-result projection; run `npm test`.
+- Public tool contract: the field-level three-layer result contract and per-tool summary strings are in [`src/tools/README.md`](./src/tools/README.md); registered tool implementations live in [`src/tools/`](./src/tools/) and the extension entry in [`index.ts`](./index.ts).
 
 ## Tool Result UI
 

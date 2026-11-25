@@ -1,4 +1,5 @@
-import { Type, Static } from "@earendil-works/pi-ai";
+import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
+import { Type, type Static } from "typebox";
 import { readConfig, resolveApiKey, getDefaultLocation, getDefaultLanguage } from "../config.js";
 import { search } from "../api.js";
 import { formatSearchResults, truncateOutput } from "../format.js";
@@ -30,7 +31,7 @@ type SearchParamsType = Static<typeof SearchParams>;
 // Tool definition
 // ---------------------------------------------------------------------------
 
-export const tinyfish_search = {
+export const tinyfish_search: ToolDefinition<typeof SearchParams, Record<string, unknown>> = {
   name: "tinyfish_search",
   label: "TinyFish Search",
   description:

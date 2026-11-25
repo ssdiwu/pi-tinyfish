@@ -1,6 +1,6 @@
 {
   "name": "pi-tinyfish-tools",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "TinyFish Web Agent tools for pi — search, fetch, and goal-driven browser automation",
   "type": "module",
   "keywords": [
@@ -28,6 +28,9 @@
     "src/",
     "skills/",
     "README.md",
+    "README-zh.md",
+    "CHANGELOG.md",
+    "CHANGELOG-zh.md",
     "LICENSE",
     "package.json"
   ],
@@ -42,9 +45,9 @@
     "typebox": "*"
   },
   "devDependencies": {
-    "@earendil-works/pi-coding-agent": "*",
-    "@earendil-works/pi-ai": "*",
-    "@earendil-works/pi-tui": "*",
+    "@earendil-works/pi-coding-agent": "1.6.0",
+    "@earendil-works/pi-ai": "1.6.0",
+    "@earendil-works/pi-tui": "1.6.0",
     "typebox": "*",
     "vitest": "^3.1.0"
   },

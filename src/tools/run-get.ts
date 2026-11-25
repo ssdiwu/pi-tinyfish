@@ -1,4 +1,5 @@
-import { Type, Static } from "@earendil-works/pi-ai";
+import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
+import { Type, type Static } from "typebox";
 import { readConfig, resolveApiKey } from "../config.js";
 import { getRun } from "../api.js";
 import { formatResultProjection } from "../format.js";
@@ -18,7 +19,7 @@ type RunGetParamsType = Static<typeof RunGetParams>;
 // Tool definition
 // ---------------------------------------------------------------------------
 
-export const tinyfish_run_get = {
+export const tinyfish_run_get: ToolDefinition<typeof RunGetParams, Record<string, unknown>> = {
   name: "tinyfish_run_get",
   label: "TinyFish Get Run",
   description:

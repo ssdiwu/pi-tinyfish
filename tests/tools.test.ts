@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
@@ -135,6 +135,19 @@ describe("tools — registration shape validation", () => {
   });
 
   describe("fetch parameters", () => {
+    it("forwards imageLinks to the wire request", async () => {
+      process.env.TINYFISH_API_KEY = "test-key";
+      const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ results: [] }));
+      vi.stubGlobal("fetch", fetchMock);
+      try {
+        const { tinyfish_fetch } = await import(toolImports.fetch);
+        await tinyfish_fetch.execute("test-call-id", { url: "https://example.test", imageLinks: true });
+        expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toMatchObject({ image_links: true });
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+
     it("has url or urls parameter", async () => {
       const mod = await import(toolImports.fetch);
       const props = Object.keys(mod.tinyfish_fetch.parameters.properties);

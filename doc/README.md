@@ -1,12 +1,14 @@
 # pi-tinyfish 文档入口
 
+> **English contribution guide:** [README.md](../README.md) (usage) · [README-zh.md](../README-zh.md) (Chinese companion) · [AGENTS.md](../AGENTS.md) (engineering rules). Keep both READMEs and this map in sync; user-visible release notes go to `CHANGELOG.md`.
+
 本文件只做导航，不重复正文。每份文档各有一处权威副本。
 
 ## 从这里开始
 
 | 我想知道 | 去哪读 |
 |---|---|
-| 怎么安装、怎么用、六个工具是什么 | [../README.md](../README.md) |
+| 怎么安装、怎么用、六个工具是什么 | [../README.md](../README.md)（英文）／[../README-zh.md](../README-zh.md)（中文） |
 | 仓库里有哪些文档、该读哪一份 | 本文件 |
 | 工程、安全与交付边界；改动的验证方式 | [../AGENTS.md](../AGENTS.md) |
 | 源码结构与实现约定 | [../src/README.md](../src/README.md) |
@@ -19,7 +21,7 @@
 
 ## 分层约定
 
-- `README.md` 与 `src/README.md`、`src/tools/README.md`：现行机制与规格的正文，每项只有一处。
+- `README.md` 与 `README-zh.md` 是同一份现行机制正文的英文／中文版本（同步维护）；`src/README.md`、`src/tools/README.md`：现行机制与规格的正文，每项只有一处。
 - `doc/决策档案/`：难逆转决策，修订以「后记」追加，不改写原文。
 - `doc/references/`：只保存来源、验证记录与历史阶段材料，不作为现行权威，也不维护第二份正文。
 - 本机原始现场（截图、抓包、原始日志）放仓库根 `.artifacts/`，已被 Git 忽略，不随仓库分发。
@@ -33,6 +35,6 @@
 
 ## 维护规则
 
-- 工具、参数、错误语义、登录方式或安装入口变化时同步 `README.md` 与相关 skill。
+- 工具、参数、错误语义、登录方式或安装入口变化时同步 `README.md`、`README-zh.md` 与相关 skill。
 - 机制或规格变化 → 更新对应正文；难逆转决策 → 新增 ADR 并同步决策档案索引。
-- 用户可感知的已完成变化 → `CHANGELOG.md`；动态运行结果与本机原始现场不写入正文。
+- 日常事实先写入本仓中文 `CHANGELOG-zh.md`；准备发布时按版本把用户可感知的已完成变化同步到英文 `CHANGELOG.md`；两份 changelog 都随 npm 包发布。动态运行结果与本机原始现场不写入正文。

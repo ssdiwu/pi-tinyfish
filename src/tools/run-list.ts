@@ -1,4 +1,5 @@
-import { Type, Static } from "@earendil-works/pi-ai";
+import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
+import { Type, type Static } from "typebox";
 import { readConfig, resolveApiKey } from "../config.js";
 import { listRuns } from "../api.js";
 import { renderCollapsibleMarkdown } from "../render.js";
@@ -42,7 +43,7 @@ type RunListParamsType = Static<typeof RunListParams>;
 // Tool definition
 // ---------------------------------------------------------------------------
 
-export const tinyfish_run_list = {
+export const tinyfish_run_list: ToolDefinition<typeof RunListParams, Record<string, unknown>> = {
   name: "tinyfish_run_list",
   label: "TinyFish List Runs",
   description:
